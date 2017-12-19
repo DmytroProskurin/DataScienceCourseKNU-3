@@ -1,54 +1,58 @@
-1.	Створить список list1 <-  list(observationA = c(1:5, 7:3), observationB = matrix(1:6, nrow=2)). Для цього списку знайдіть sum за допомогою lapply.
+1.	За допомогою download.file() завантажте любий excel файл з порталу http://data.gov.ua та зчитайте його (xls, xlsx – бінарні формати, тому встановить mode = “wb”. Виведіть перші 6 строк отриманого фрейму даних.
 ```r
-> list1 <-  list(observationA = c(1:5, 7:3), observationB = matrix(1:6, nrow=2))
-> list1
-$observationA
- [1] 1 2 3 4 5 7 6 5 4 3
+# change locale to ukrainian
+> Sys.setlocale(locale = "ukrainian")
+[1] "LC_COLLATE=Ukrainian_Ukraine.1251;LC_CTYPE=Ukrainian_Ukraine.1251;LC_MONETARY=Ukrainian_Ukraine.1251;LC_NUMERIC=C;LC_TIME=Ukrainian_Ukraine.1251"
 
-$observationB
-     [,1] [,2] [,3]
-[1,]    1    3    5
-[2,]    2    4    6
-> lapply(list1, sum)
-$observationA
-[1] 40
-
-$observationB
-[1] 21
+> fileURL <- "http://data.gov.ua/file/152588/download?token=Nk14ZhWf"
+> download.file(fileURL, destfile = "data.xls", mode = "wb")
+trying URL 'http://data.gov.ua/file/152588/download?token=Nk14ZhWf'
+Content type 'application/vnd.ms-excel' length 324096 bytes (316 KB)
+downloaded 316 KB
+> data <- read.xlsx("data.xls", sheetIndex = 1, startRow=6, as.data.frame=TRUE, encoding = "UTF-8")
+> head(data)
+  X1 Інформація Про.надання.списків.для.нагородження. X42739 X01.12.1 надання..список..нагородження
+1  2 Інформація                Про проблемні питання   42739  01-12/2             проблема, питання
+2  3 Інформація                Про звернення громадян  42739  01-12/3          звернення, громадяни
+3  4 Інформація                Про звернення громадян  42739  01-12/4          звернення, громадяни
+4  5 Інформація                 Про тимчасовий розпис  42740  01-12/5             тимчасово, розпис
+5  6 Інформація                    Список працівників  42740  01-11/6             список, працівник
+6  7 Інформація                  Про роботу з кадрами  42740  01-12/7                 робота, кадри
+  електронний Управління.капітального.будівництва.Сумської.ОДА
+1 електронний Управління капітального будівництва Сумської ОДА
+2    паперова Управління капітального будівництва Сумської ОДА
+3    паперова Управління капітального будівництва Сумської ОДА
+4 електронний Управління капітального будівництва Сумської ОДА
+5    паперова Управління капітального будівництва Сумської ОДА
+6 електронний Управління капітального будівництва Сумської ОДА
+  Управління.капітального.будівництва.Сумської.ОДА.1 X42740 основна NA. NA..1 NA..2
+1   Управління капітального будівництва Сумської ОДА  42740 основна  NA    NA    NA
+2   Управління капітального будівництва Сумської ОДА  42740 основна  NA    NA    NA
+3   Управління капітального будівництва Сумської ОДА  42740 основна  NA    NA    NA
+4   Управління капітального будівництва Сумської ОДА  42741 фінанси  NA    NA    NA
+5   Управління капітального будівництва Сумської ОДА  42741 основна  NA    NA    NA
+6   Управління капітального будівництва Сумської ОДА  42741 основна  NA    NA    NA
 ```
-
-2.	Для кожного елементу списку list1 знайдіть максимальне та мінімальне значення (range) за допомогою lapply та sapply.
+2.	За допомогою download.file() завантажте файл getdata_data_ss06hid.csv за посиланням https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv та завантажте дані в R. Code book, що пояснює значення змінних знаходиться за посиланням https://www.dropbox.com/s/dijv0rlwo4mryv5/PUMSDataDict06.pdf?dl=0  Необхідно знайти, скільки property мають value $1000000+
 ```r
-> lapply(list1, range)
-$observationA
-[1] 1 7
-
-$observationB
-[1] 1 6
-> sapply(list1, range)
-     observationA observationB
-[1,]            1            1
-[2,]            7            6
+> download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv", destfile = "data.csv")
+trying URL 'https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv'
+Content type 'text/csv' length 4246554 bytes (4.0 MB)
+downloaded 4.0 MB
+> data <- read.csv("data.csv")
+# Get only the VAL column
+> values <- data$VAL
+# Create a list, where for values that are non-NA and equal 24 (in the Code book it is said 24 stands for $1000000+) say TRUE, else - NA
+> a <- lapply(values, function(x) if (!is.na(x) && x==24) TRUE else NA)
+# Filter out the NA values and get the count of all TRUE values 
+> length(a[!is.na(a)])
+[1] 53
 ```
-
-3.	Для вбудованого набору даних InsectSprays знайти середнє count для кожного spray.
+3.	Зчитайте xml файл за посиланням http://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml Скільки ресторанів мають zipcode 21231?
 ```r
-> lapply(split(InsectSprays, f=InsectSprays["spray"]), function(x) mean(x$count))
-$A
-[1] 14.5
-
-$B
-[1] 15.33333
-
-$C
-[1] 2.083333
-
-$D
-[1] 4.916667
-
-$E
-[1] 3.5
-
-$F
-[1] 16.66667
+> url <- "http://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml"
+> doc <- xmlTreeParse(url,useInternal=TRUE)
+> rootNode <- xmlRoot(doc)
+> length(xpathApply(rootNode, '//row/row/zipcode[text()="21231"]'))
+[1] 127
 ```
