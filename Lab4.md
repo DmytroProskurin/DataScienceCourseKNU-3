@@ -1,109 +1,131 @@
-### Для лабораторної роботи необхідно завантажити файл з даними за посиланням: (https://www.dropbox.com/s/8k1gjgk8cflmpb6/hw1_data.csv?dl=0). В RStudio файл необхідно прочитати за допомогою команди read.csv.
-### В лабораторній необхідно відповісти на запитання:
-#### 1. Які назви стовпців файлу даних?
-```{r}
-csv = read.csv("C:/Users/apex/Downloads/hw1_data.csv")
-colnames(csv)
+1.	Завантажте файл з даними за посиланням https://dcc.ligo.org/public/0146/P1700337/001/H-H1_LOSC_C00_4_V1-1187006834-4096.hdf5 
+```r
+> download.file(url="https://dcc.ligo.org/public/0146/P1700337/001/H-H1_LOSC_C00_4_V1-1187006834-4096.hdf5", destfile = "data.hdf5", mode="wb")
+trying URL 'https://dcc.ligo.org/public/0146/P1700337/001/H-H1_LOSC_C00_4_V1-1187006834-4096.hdf5'
+Content type 'text/plain; charset=UTF-8' length 125217658 bytes (119.4 MB)
+downloaded 119.4 MB
 ```
-Результат:
-```{r}
-[1] "Ozone"   "Solar.R" "Wind"    "Temp"    "Month"   "Day"
+2.	Встановить в R пакет для роботи з HDF5 файлами.
+```r
+> source("http://bioconductor.org/biocLite.R")
+Installing package into ‘C:/Users/Andriy/Documents/R/win-library/3.4’
+(as ‘lib’ is unspecified)
+trying URL 'https://bioconductor.org/packages/3.6/bioc/bin/windows/contrib/3.4/BiocInstaller_1.28.0.zip'
+Content type 'application/zip' length 130329 bytes (127 KB)
+downloaded 127 KB
+
+package ‘BiocInstaller’ successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+	C:\Users\Andriy\AppData\Local\Temp\Rtmp8iXzWT\downloaded_packages
+Bioconductor version 3.6 (BiocInstaller
+  1.28.0), ?biocLite for help
+> biocLite("rhdf5")
+BioC_mirror: https://bioconductor.org
+Using Bioconductor 3.6 (BiocInstaller 1.28.0),
+  R 3.4.3 (2017-11-30).
+Installing package(s) ‘rhdf5’
+also installing the dependency ‘zlibbioc’
+
+trying URL 'https://bioconductor.org/packages/3.6/bioc/bin/windows/contrib/3.4/zlibbioc_1.24.0.zip'
+Content type 'application/zip' length 751310 bytes (733 KB)
+downloaded 733 KB
+
+trying URL 'https://bioconductor.org/packages/3.6/bioc/bin/windows/contrib/3.4/rhdf5_2.22.0.zip'
+Content type 'application/zip' length 5819220 bytes (5.5 MB)
+downloaded 5.5 MB
+
+package ‘zlibbioc’ successfully unpacked and MD5 sums checked
+package ‘rhdf5’ successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+	C:\Users\Andriy\AppData\Local\Temp\Rtmp8iXzWT\downloaded_packages
+> library(rhdf5)
 ```
-#### 2.	Виведіть перші 6 строк фрейму даних.
-```{r}
-head(csv, 6)
+3.	Виведіть зміст файлу командою h5ls().
+```r
+> h5ls("data.hdf5")
+                 group            name
+0                    /            meta
+1                /meta     Description
+2                /meta  DescriptionURL
+3                /meta        Detector
+4                /meta        Duration
+5                /meta        GPSstart
+6                /meta     Observatory
+7                /meta            Type
+8                /meta        UTCstart
+9                    /         quality
+10            /quality          detail
+11            /quality      injections
+12 /quality/injections InjDescriptions
+13 /quality/injections   InjShortnames
+14 /quality/injections         Injmask
+15            /quality          simple
+16     /quality/simple  DQDescriptions
+17     /quality/simple    DQShortnames
+18     /quality/simple          DQmask
+19                   /          strain
+20             /strain          Strain
+         otype  dclass      dim
+0    H5I_GROUP                 
+1  H5I_DATASET  STRING    ( 0 )
+2  H5I_DATASET  STRING    ( 0 )
+3  H5I_DATASET  STRING    ( 0 )
+4  H5I_DATASET INTEGER    ( 0 )
+5  H5I_DATASET INTEGER    ( 0 )
+6  H5I_DATASET  STRING    ( 0 )
+7  H5I_DATASET  STRING    ( 0 )
+8  H5I_DATASET  STRING    ( 0 )
+9    H5I_GROUP                 
+10   H5I_GROUP                 
+11   H5I_GROUP                 
+12 H5I_DATASET  STRING        5
+13 H5I_DATASET  STRING        5
+14 H5I_DATASET INTEGER     4096
+15   H5I_GROUP                 
+16 H5I_DATASET  STRING        7
+17 H5I_DATASET  STRING        7
+18 H5I_DATASET INTEGER     4096
+19   H5I_GROUP                 
+20 H5I_DATASET   FLOAT 16777216
 ```
-Результат:
-```{r}
-  Ozone Solar.R Wind Temp Month Day
-1    41     190  7.4   67     5   1
-2    36     118  8.0   72     5   2
-3    12     149 12.6   74     5   3
-4    18     313 11.5   62     5   4
-5    NA      NA 14.3   56     5   5
-6    28      NA 14.9   66     5   6
+
+4.	Зчитайте результати вимірів. Для цього зчитайте name Strain з групи strain в змінну strain. Після зчитування не забувайте закривати файл командою H5Close().
+```r
+> strain <- h5read("data.hdf5", "strain/Strain")
+> H5close()
 ```
-#### 3.	Скільки спостерігань (строк) в дата фреймі?
-```{r}
-nrow(csv)
+
+5.	Також з «strain/Strain» зчитайте атрибут (функція h5readAttributes) Xspacing в змінну st та виведіть її. Це інтервал часу між вимірами.
+```r
+> st <- h5readAttributes("data.hdf5", "/strain/Strain")$Xspacing
+> st
+[1] 0.0002441406
 ```
-Результат:
-```{r}
-[1] 153
+
+6.	Знайдіть час початку події та її тривалість. Для цього з групи meta зчитайте в змінну gpsStart  name GPSstart та в змінну duration name Duration.
+```r
+> gpsStart <- h5read("data.hdf5", "meta/GPSstart")
+> duration <- h5read("data.hdf5", "meta/Duration")
 ```
-#### 4.	Виведіть останні 10 строк дата фрейму.
-```{r}
-tail(csv, 10)
+
+7.	Знайдіть час закінчення події та збережіть його в змінну gpsEnd.
+```r
+> gpsEnd <- gpsStart + duration
 ```
-Результат:
-```{r}
-    Ozone Solar.R Wind Temp Month Day
-144    13     238 12.6   64     9  21
-145    23      14  9.2   71     9  22
-146    36     139 10.3   81     9  23
-147     7      49 10.3   69     9  24
-148    14      20 16.6   63     9  25
-149    30     193  6.9   70     9  26
-150    NA     145 13.2   77     9  27
-151    14     191 14.3   75     9  28
-152    18     131  8.0   76     9  29
-153    20     223 11.5   68     9  30
+8.	Створіть вектор з часу вимірів і збережіть у змінну myTime. Початок послідовності – gpsStart, кінець – gpsEnd, крок – st.
+```r
+> myTime <- seq(gpsStart, gpsEnd, st)
 ```
-#### 5.	Як багато значень «NA» в стовпці «Ozone»?
-```{r}
-length(which(is.na(csv$Ozone)))
+
+9.	Побудуємо графік тільки для першого мільйону вимірів. Для цього створіть змінну numSamples, яка дорівнює 1000000.
+```r
+> numSamples <- 1000000
 ```
-Результат:
-```{r}
-[1] 37
+
+10.	Побудуйте графік за допомогою функції plot(myTime[0:numSamples], strain[0:numSamples], type = "l", xlab = "GPS Time (s)", ylab = "H1 Strain")
+```r
+> plot(myTime[0:numSamples], strain[0:numSamples], type = "l", xlab = "GPS Time (s)", ylab = "H1 Strain")
 ```
-#### 6.	Яке середнє (mean) стовпця «Ozone». Виключити «NA» значення.
-```{r}
-mean(csv$Ozone[!is.na(csv$Ozone)])
-```
-Результат:
-```{r}
-[1] 42.12931
-```
-#### 7.	Виведіть частину набору даних (subset) зі значенням «Ozone» > 31 та «Temp» > 90. Яке середнє (mean) значень «Solar.R» в цьому наборі даних (subset)?
-```{r}
-subset = subset(csv, (csv$Ozone > 31) & (csv$Temp > 90))
-subset
-```
-Результат:
-```{r}
-    Ozone Solar.R Wind Temp Month Day
-69     97     267  6.3   92     7   8
-70     97     272  5.7   92     7   9
-120    76     203  9.7   97     8  28
-121   118     225  2.3   94     8  29
-122    84     237  6.3   96     8  30
-123    85     188  6.3   94     8  31
-124    96     167  6.9   91     9   1
-125    78     197  5.1   92     9   2
-126    73     183  2.8   93     9   3
-127    91     189  4.6   93     9   4
-```
-```{r}
-mean(subset$Solar.R)
-```
-Результат:
-```{r}
-[1] 212.8
-```
-#### 8.	Яке середнє значення (mean) для «Temp» для червня («Month» дорівнює 6)?
-```{r}
-mean(subset(csv, (csv$Month == 6))$Temp)
-```
-Результат:
-```{r}
-[1] 79.1
-```
-#### 9.	Яке максимальне значення «Ozone» для травня («Month» дорівнює 5)?
-```{r}
-max(subset(csv, (csv$Month == 5))$Ozone, na.rm = TRUE)
-```
-Результат:
-```{r}
-[1] 115
-```
+![alt text](https://github.com/savandriy/mpoi/raw/master/Rplot.png)
