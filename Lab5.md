@@ -1,113 +1,81 @@
-```{r}
-setwd("C:/Users/apex/Downloads/")
+Код:
+```r
+# Download the data
+> a <- read_html("http://www.imdb.com/search/title?count=100&release_date=2017,2017&title_type=feature")
+
+# Parse rank position
+> rank_data_html <- html_nodes(a,'.text-primary')
+> rank_data <- html_text(rank_data_html)
+# Convert ranks to numbers
+> rank_data<-as.numeric(rank_data)
+
+# Parse the movie titles
+> title_data_html <- html_nodes(a,'.lister-item-header a')
+> title_data <- html_text(title_data_html)
+
+# Parse the Duration of movies
+> runtime_data_html <- html_nodes(a,'.text-muted .runtime')
+> runtime_data <- html_text(runtime_data_html)
+# Delete the trailing " min" in durations
+> runtime_data<-gsub(" min","",runtime_data)
+# Convert durations to numbers
+> runtime_data<-as.numeric(runtime_data)
+
+# Create the data frame
+> movies <- data.frame(Rank = rank_data, Title = title_data, Runtime = runtime_data, stringsAsFactors = FALSE )
 ```
-#### 1.
-#
-```{r}
-pmean("specdata", "sulfate", 1:3)
+
+1.	Виведіть перші 6 назв фільмів дата фрейму.
+```r
+> head(movies$Title, 6)
+[1] "Зорянi вiйни: Останнi Джедаi"  
+[2] "The Disaster Artist"           
+[3] "The Shape of Water"            
+[4] "Лiга справедливостi"           
+[5] "Jumanji: Welcome to the Jungle"
+[6] "Тор: Рагнарок"      
 ```
-Результат:
-```{r}
-[1] 4.389262
+
+2.	Виведіть всі назви фільмів с тривалістю більше 120 хв.
+```r
+> movies[movies$Runtime > 120, ]$Title
+ [1] "Зорянi вiйни: Останнi Джедаi"            
+ [2] "The Shape of Water"                      
+ [3] "Тор: Рагнарок"                           
+ [4] "Mother!"                                 
+ [5] "Kingsman: Золоте кiльце"                 
+ [6] "Вартовi Галактики 2"                     
+ [7] "Воно"                                    
+ [8] "The Killing of a Sacred Deer"            
+ [9] "Darkest Hour"                            
+[10] "Call Me by Your Name"                    
+[11] "Той, хто бiжить по лезу 2049"            
+[12] "Валерiан i мiсто тисячi планет"          
+[13] "Логан: Росомаха"                         
+[14] "Phantom Thread"                          
+[15] "Downsizing"                              
+[16] "Диво-Жiнка"                              
+[17] "Людина-павук: Повернення додому"         
+[18] "Detroit"                                 
+[19] "All the Money in the World"              
+[20] "Molly's Game"                            
+[21] "Сiм сестер"                              
+[22] "Красуня i Чудовисько"                    
+[23] "Вiйна за планету мавп"                   
+[24] "Mudbound"                                
+[25] "The Square"                              
+[26] "Roman J. Israel, Esq."                   
+[27] "Пiрати Карибського моря: Помста Салазара"
+[28] "Трансформери: Останнiй лицар"            
+[29] "Пострiл в безодню"                       
+[30] "Power Rangers"                           
+[31] "Hostiles"                                
+[32] "Girls Trip"                              
+[33] "Джон Уiк 2"   
 ```
-#
-```{r}
-pmean("specdata", "sulfate", 1:10)
-```
-Результат:
-```{r}
-[1] 4.064128
-```
-#
-```{r}
-pmean("specdata", "sulfate", 55)
-```
-Результат:
-```{r}
-[1] 3.587319
-```
-#
-```{r}
-pmean("specdata", "nitrate")
-```
-Результат:
-```{r}
-[1] 1.702932
-```
-#### 2.
-#
-```{r}
-complete("specdata", 1)
-```
-Результат:
-```{r}
-  id nobs
-1  1  117
-```
-#
-```{r}
-complete("specdata", c(2, 4, 8, 10, 12))
-```
-Результат:
-```{r}
-  id nobs
-1  2 1041
-2  4  474
-3  8  192
-4 10  148
-5 12   96
-```
-#
-```{r}
-complete("specdata", 50:60)
-```
-Результат:
-```{r}
-   id nobs
-1  50  459
-2  51  193
-3  52  812
-4  53  342
-5  54  219
-6  55  372
-7  56  642
-8  57  452
-9  58  391
-10 59  445
-11 60  448
-```
-#### 3.
-#
-```{r}
-cr <- corr("specdata", 150)
-head(cr); summary(cr)
-```
-Результат:
-```{r}
-[1] -0.01895754 -0.14051254 -0.04389737 -0.06815956 -0.12350667 -0.07588814
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
--0.21057 -0.04999  0.09463  0.12525  0.26844  0.76313 
-```
-#
-```{r}
-cr <- corr("specdata", 400)
-head(cr); summary(cr)
-```
-Результат:
-```{r}
-[1] -0.01895754 -0.04389737 -0.06815956 -0.07588814  0.76312884 -0.15782860
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
--0.17623 -0.03109  0.10021  0.13969  0.26849  0.76313
-```
-#
-```{r}
-cr <- corr("specdata", 5000)
-head(cr); summary(cr); length(cr)
-```
-Результат:
-```{r}
-numeric(0)
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-                                                
-[1] 0
+
+3.	Скільки фільмів мають тривалість менше 100 хв.
+```r
+> length(movies[movies$Runtime < 100, ]$Title)
+[1] 20
 ```
