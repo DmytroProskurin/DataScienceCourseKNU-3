@@ -1,58 +1,131 @@
-1.	За допомогою download.file() завантажте любий excel файл з порталу http://data.gov.ua та зчитайте його (xls, xlsx – бінарні формати, тому встановить mode = “wb”. Виведіть перші 6 строк отриманого фрейму даних.
+1.	Завантажте файл з даними за посиланням https://dcc.ligo.org/public/0146/P1700337/001/H-H1_LOSC_C00_4_V1-1187006834-4096.hdf5 
 ```r
-# change locale to ukrainian
-> Sys.setlocale(locale = "ukrainian")
-[1] "LC_COLLATE=Ukrainian_Ukraine.1251;LC_CTYPE=Ukrainian_Ukraine.1251;LC_MONETARY=Ukrainian_Ukraine.1251;LC_NUMERIC=C;LC_TIME=Ukrainian_Ukraine.1251"
+> download.file(url="https://dcc.ligo.org/public/0146/P1700337/001/H-H1_LOSC_C00_4_V1-1187006834-4096.hdf5", destfile = "data.hdf5", mode="wb")
+trying URL 'https://dcc.ligo.org/public/0146/P1700337/001/H-H1_LOSC_C00_4_V1-1187006834-4096.hdf5'
+Content type 'text/plain; charset=UTF-8' length 125217658 bytes (119.4 MB)
+downloaded 119.4 MB
+```
+2.	Встановить в R пакет для роботи з HDF5 файлами.
+```r
+> source("http://bioconductor.org/biocLite.R")
+Installing package into ‘C:/Users/Andriy/Documents/R/win-library/3.4’
+(as ‘lib’ is unspecified)
+trying URL 'https://bioconductor.org/packages/3.6/bioc/bin/windows/contrib/3.4/BiocInstaller_1.28.0.zip'
+Content type 'application/zip' length 130329 bytes (127 KB)
+downloaded 127 KB
 
-> fileURL <- "http://data.gov.ua/file/152588/download?token=Nk14ZhWf"
-> download.file(fileURL, destfile = "data.xls", mode = "wb")
-trying URL 'http://data.gov.ua/file/152588/download?token=Nk14ZhWf'
-Content type 'application/vnd.ms-excel' length 324096 bytes (316 KB)
-downloaded 316 KB
-> data <- read.xlsx("data.xls", sheetIndex = 1, startRow=6, as.data.frame=TRUE, encoding = "UTF-8")
-> head(data)
-  X1 Інформація Про.надання.списків.для.нагородження. X42739 X01.12.1 надання..список..нагородження
-1  2 Інформація                Про проблемні питання   42739  01-12/2             проблема, питання
-2  3 Інформація                Про звернення громадян  42739  01-12/3          звернення, громадяни
-3  4 Інформація                Про звернення громадян  42739  01-12/4          звернення, громадяни
-4  5 Інформація                 Про тимчасовий розпис  42740  01-12/5             тимчасово, розпис
-5  6 Інформація                    Список працівників  42740  01-11/6             список, працівник
-6  7 Інформація                  Про роботу з кадрами  42740  01-12/7                 робота, кадри
-  електронний Управління.капітального.будівництва.Сумської.ОДА
-1 електронний Управління капітального будівництва Сумської ОДА
-2    паперова Управління капітального будівництва Сумської ОДА
-3    паперова Управління капітального будівництва Сумської ОДА
-4 електронний Управління капітального будівництва Сумської ОДА
-5    паперова Управління капітального будівництва Сумської ОДА
-6 електронний Управління капітального будівництва Сумської ОДА
-  Управління.капітального.будівництва.Сумської.ОДА.1 X42740 основна NA. NA..1 NA..2
-1   Управління капітального будівництва Сумської ОДА  42740 основна  NA    NA    NA
-2   Управління капітального будівництва Сумської ОДА  42740 основна  NA    NA    NA
-3   Управління капітального будівництва Сумської ОДА  42740 основна  NA    NA    NA
-4   Управління капітального будівництва Сумської ОДА  42741 фінанси  NA    NA    NA
-5   Управління капітального будівництва Сумської ОДА  42741 основна  NA    NA    NA
-6   Управління капітального будівництва Сумської ОДА  42741 основна  NA    NA    NA
+package ‘BiocInstaller’ successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+	C:\Users\Andriy\AppData\Local\Temp\Rtmp8iXzWT\downloaded_packages
+Bioconductor version 3.6 (BiocInstaller
+  1.28.0), ?biocLite for help
+> biocLite("rhdf5")
+BioC_mirror: https://bioconductor.org
+Using Bioconductor 3.6 (BiocInstaller 1.28.0),
+  R 3.4.3 (2017-11-30).
+Installing package(s) ‘rhdf5’
+also installing the dependency ‘zlibbioc’
+
+trying URL 'https://bioconductor.org/packages/3.6/bioc/bin/windows/contrib/3.4/zlibbioc_1.24.0.zip'
+Content type 'application/zip' length 751310 bytes (733 KB)
+downloaded 733 KB
+
+trying URL 'https://bioconductor.org/packages/3.6/bioc/bin/windows/contrib/3.4/rhdf5_2.22.0.zip'
+Content type 'application/zip' length 5819220 bytes (5.5 MB)
+downloaded 5.5 MB
+
+package ‘zlibbioc’ successfully unpacked and MD5 sums checked
+package ‘rhdf5’ successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+	C:\Users\Andriy\AppData\Local\Temp\Rtmp8iXzWT\downloaded_packages
+> library(rhdf5)
 ```
-2.	За допомогою download.file() завантажте файл getdata_data_ss06hid.csv за посиланням https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv та завантажте дані в R. Code book, що пояснює значення змінних знаходиться за посиланням https://www.dropbox.com/s/dijv0rlwo4mryv5/PUMSDataDict06.pdf?dl=0  Необхідно знайти, скільки property мають value $1000000+
+3.	Виведіть зміст файлу командою h5ls().
 ```r
-> download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv", destfile = "data.csv")
-trying URL 'https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv'
-Content type 'text/csv' length 4246554 bytes (4.0 MB)
-downloaded 4.0 MB
-> data <- read.csv("data.csv")
-# Get only the VAL column
-> values <- data$VAL
-# Create a list, where for values that are non-NA and equal 24 (in the Code book it is said 24 stands for $1000000+) say TRUE, else - NA
-> a <- lapply(values, function(x) if (!is.na(x) && x==24) TRUE else NA)
-# Filter out the NA values and get the count of all TRUE values 
-> length(a[!is.na(a)])
-[1] 53
+> h5ls("data.hdf5")
+                 group            name
+0                    /            meta
+1                /meta     Description
+2                /meta  DescriptionURL
+3                /meta        Detector
+4                /meta        Duration
+5                /meta        GPSstart
+6                /meta     Observatory
+7                /meta            Type
+8                /meta        UTCstart
+9                    /         quality
+10            /quality          detail
+11            /quality      injections
+12 /quality/injections InjDescriptions
+13 /quality/injections   InjShortnames
+14 /quality/injections         Injmask
+15            /quality          simple
+16     /quality/simple  DQDescriptions
+17     /quality/simple    DQShortnames
+18     /quality/simple          DQmask
+19                   /          strain
+20             /strain          Strain
+         otype  dclass      dim
+0    H5I_GROUP                 
+1  H5I_DATASET  STRING    ( 0 )
+2  H5I_DATASET  STRING    ( 0 )
+3  H5I_DATASET  STRING    ( 0 )
+4  H5I_DATASET INTEGER    ( 0 )
+5  H5I_DATASET INTEGER    ( 0 )
+6  H5I_DATASET  STRING    ( 0 )
+7  H5I_DATASET  STRING    ( 0 )
+8  H5I_DATASET  STRING    ( 0 )
+9    H5I_GROUP                 
+10   H5I_GROUP                 
+11   H5I_GROUP                 
+12 H5I_DATASET  STRING        5
+13 H5I_DATASET  STRING        5
+14 H5I_DATASET INTEGER     4096
+15   H5I_GROUP                 
+16 H5I_DATASET  STRING        7
+17 H5I_DATASET  STRING        7
+18 H5I_DATASET INTEGER     4096
+19   H5I_GROUP                 
+20 H5I_DATASET   FLOAT 16777216
 ```
-3.	Зчитайте xml файл за посиланням http://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml Скільки ресторанів мають zipcode 21231?
+
+4.	Зчитайте результати вимірів. Для цього зчитайте name Strain з групи strain в змінну strain. Після зчитування не забувайте закривати файл командою H5Close().
 ```r
-> url <- "http://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml"
-> doc <- xmlTreeParse(url,useInternal=TRUE)
-> rootNode <- xmlRoot(doc)
-> length(xpathApply(rootNode, '//row/row/zipcode[text()="21231"]'))
-[1] 127
+> strain <- h5read("data.hdf5", "strain/Strain")
+> H5close()
 ```
+
+5.	Також з «strain/Strain» зчитайте атрибут (функція h5readAttributes) Xspacing в змінну st та виведіть її. Це інтервал часу між вимірами.
+```r
+> st <- h5readAttributes("data.hdf5", "/strain/Strain")$Xspacing
+> st
+[1] 0.0002441406
+```
+
+6.	Знайдіть час початку події та її тривалість. Для цього з групи meta зчитайте в змінну gpsStart  name GPSstart та в змінну duration name Duration.
+```r
+> gpsStart <- h5read("data.hdf5", "meta/GPSstart")
+> duration <- h5read("data.hdf5", "meta/Duration")
+```
+
+7.	Знайдіть час закінчення події та збережіть його в змінну gpsEnd.
+```r
+> gpsEnd <- gpsStart + duration
+```
+8.	Створіть вектор з часу вимірів і збережіть у змінну myTime. Початок послідовності – gpsStart, кінець – gpsEnd, крок – st.
+```r
+> myTime <- seq(gpsStart, gpsEnd, st)
+```
+
+9.	Побудуємо графік тільки для першого мільйону вимірів. Для цього створіть змінну numSamples, яка дорівнює 1000000.
+```r
+> numSamples <- 1000000
+```
+
+10.	Побудуйте графік за допомогою функції plot(myTime[0:numSamples], strain[0:numSamples], type = "l", xlab = "GPS Time (s)", ylab = "H1 Strain")
+```r
+> plot(myTime[0:numSamples], strain[0:numSamples], type = "l", xlab = "GPS Time (s)", ylab = "H1 Strain")
+```
+![alt text](https://github.com/savandriy/mpoi/raw/master/Rplot.png)
