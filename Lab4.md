@@ -17,7 +17,7 @@ downloaded 127 KB
 package ‘BiocInstaller’ successfully unpacked and MD5 sums checked
 
 The downloaded binary packages are in
-	C:\Users\Andriy\AppData\Local\Temp\Rtmp8iXzWT\downloaded_packages
+	C:\Users\Dmytro_Proskurin\AppData\Local\Temp\Rtmp8iXzWT\downloaded_packages
 Bioconductor version 3.6 (BiocInstaller
   1.28.0), ?biocLite for help
 > biocLite("rhdf5")
