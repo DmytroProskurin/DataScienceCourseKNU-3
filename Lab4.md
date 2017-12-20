@@ -8,7 +8,7 @@ downloaded 119.4 MB
 2.	Встановить в R пакет для роботи з HDF5 файлами.
 ```r
 > source("http://bioconductor.org/biocLite.R")
-Installing package into ‘C:/Users/Andriy/Documents/R/win-library/3.4’
+Installing package into ‘C:/Users/Dmytro_Proskurin/Documents/R/win-library/3.4’
 (as ‘lib’ is unspecified)
 trying URL 'https://bioconductor.org/packages/3.6/bioc/bin/windows/contrib/3.4/BiocInstaller_1.28.0.zip'
 Content type 'application/zip' length 130329 bytes (127 KB)
@@ -39,7 +39,7 @@ package ‘zlibbioc’ successfully unpacked and MD5 sums checked
 package ‘rhdf5’ successfully unpacked and MD5 sums checked
 
 The downloaded binary packages are in
-	C:\Users\Andriy\AppData\Local\Temp\Rtmp8iXzWT\downloaded_packages
+	C:\Users\Dmytro_Proskurin\AppData\Local\Temp\Rtmp8iXzWT\downloaded_packages
 > library(rhdf5)
 ```
 3.	Виведіть зміст файлу командою h5ls().
@@ -128,4 +128,3 @@ The downloaded binary packages are in
 ```r
 > plot(myTime[0:numSamples], strain[0:numSamples], type = "l", xlab = "GPS Time (s)", ylab = "H1 Strain")
 ```
-![alt text](https://github.com/savandriy/mpoi/raw/master/Rplot.png)
